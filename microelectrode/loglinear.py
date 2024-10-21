@@ -99,6 +99,18 @@ class MicroElectrode:
         self.data = data
         
         return data
+    
+    def save(self, filename=None):
+        data_unpacked = self.data.copy()
+        for c, d in self.data.iteritems():
+            if np.any(unp.std_devs(d) > 0):
+                data_unpacked[f'{c}_std'] = unp.std_devs(d)
+                data_unpacked[c] = unp.nominal_values(d)
+        if filename is None:
+            filename = self.data_file.replace('.csv', '_calculated.csv')
+        
+        data_unpacked.to_csv(filename, index=False)
+
 
     def plot_calculated(self):
         fig, ax = plt.subplots(constrained_layout=True)
