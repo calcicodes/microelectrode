@@ -35,7 +35,7 @@ class MicroElectrode:
     def calibrate(self):
         cal = pd.read_csv(self.calibration_data_file)
         
-        cal[self.log_analyte] = -np.log(cal[self.analyte])
+        cal[self.log_analyte] = -np.log10(cal[self.analyte])
         
         cal['datetime'] = pd.to_datetime(cal.datetime, format='%d/%m/%Y %H:%M:%S')
         cal['calibration_set'] = (cal.datetime.diff() > timedelta(hours=self.calibration_set_gap_hrs)).cumsum()
@@ -94,7 +94,7 @@ class MicroElectrode:
             X = (data.mV.values, self.cal['hrs_from_start'].mean())
         
         data[self.log_analyte] = pred_fn(X, *self.calibration_params)
-        data[self.analyte] = unp.exp(-data[self.log_analyte])
+        data[self.analyte] = 10**(-data[self.log_analyte])
         
         self.data = data
         
@@ -102,12 +102,12 @@ class MicroElectrode:
     
     def save(self, filename=None):
         data_unpacked = self.data.copy()
-        for c, d in self.data.iteritems():
+        for c, d in self.data.items():
             if np.any(unp.std_devs(d) > 0):
                 data_unpacked[f'{c}_std'] = unp.std_devs(d)
                 data_unpacked[c] = unp.nominal_values(d)
         if filename is None:
-            filename = self.data_file.replace('.csv', '_calculated.csv')
+            filename = self.data_file.replace('.csv', '_calibrated.csv')
         
         data_unpacked.to_csv(filename, index=False)
 
