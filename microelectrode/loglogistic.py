@@ -151,7 +151,7 @@ class MicroElectrode:
                 data_unpacked[f'{c}_std'] = unp.std_devs(d)
                 data_unpacked[c] = unp.nominal_values(d)
         if filename is None:
-            filename = self.data_file.replace('.csv', '_calibrated.csv')
+            filename = self.data_file.replace('.csv', '_calibrated_logistic.csv')
         
         data_unpacked.to_csv(filename, index=False)
 
