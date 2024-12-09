@@ -79,9 +79,18 @@ class MicroElectrode:
         
         self.session_start = cal.datetime.min()
         self.cal['hrs_from_start'] = (cal.datetime - self.session_start).dt.total_seconds() / 60 / 60
+
+        X = (cal[self.log_analyte], cal['hrs_from_start'])        
+        # calculate initial guess
+        A1_0 = cal.loc[cal.calibration_set == 0, 'mV'].min()
+        A2_0 = cal.loc[cal.calibration_set == 0, 'mV'].max()
+        x0_0 = cal.loc[cal.calibration_set == 0, self.log_analyte].mean()
+        dx_0 = 1
         
-        X = (self.cal[self.log_analyte], cal['hrs_from_start'])
-        p, cov = curve_fit(calibration_fn, X, cal['mV'], p0=[self.cal[self.log_analyte].max(), self.cal[self.log_analyte].min(), 0, 1, 0, 0, 0, 0])
+        A1_m = (A1_0 - cal.loc[cal.calibration_set == cal['calibration_set'].max(), 'mV'].min()) / cal['hrs_from_start'].max()
+        A2_m = (A2_0 - cal.loc[cal.calibration_set == cal['calibration_set'].max(), 'mV'].max()) / cal['hrs_from_start'].max()
+        
+        p, cov = curve_fit(calibration_fn, X, cal['mV'], p0=[A1_0, A2_0, x0_0, dx_0, A1_m, A2_m, 0, 0])
 
         self.calibration_params = un.correlated_values(p, cov)
             
