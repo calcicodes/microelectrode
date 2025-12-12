@@ -22,6 +22,9 @@ def O2_solubility(sal,tempC):
 
     return np.exp(lnC0)
 
+def O2_diffusivity(tempC, sal):
+    # O2 diffusivity in cm2/s from Li and Gregory, 1974
+    return
 
 def seawater_density(sal, tempC):
     # seawater density from millero and Poisson 1981 in kg/L
@@ -53,3 +56,8 @@ def seawater_density(sal, tempC):
     rho_sal = rho_0 + A * sal + B * sal**1.5 + C * sal**2
 
     return rho_sal / 1000  # convert to kg/L
+
+def seawater_dynamic_viscocity(sal, tempC):
+    # sewater dynamic viscocity from Sharqawy et al., 2010
+
+    return
